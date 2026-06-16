@@ -2,9 +2,6 @@
     "name": "dev-blog",
     "version": "0.1.0",
     "private": true,
-    "engines": {
-        "node": "24.x"
-    },
     "dependencies": {
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",
@@ -41,7 +38,7 @@
         "react-loading-skeleton": "^3.1.0",
         "react-redux": "^8.0.4",
         "react-router-dom": "^6.4.2",
-        "react-scripts": "5.0.1",
+        "react-scripts": "^5.0.1",
         "react-sizeme": "^3.0.2",
         "save": "^2.9.0",
         "styled-components": "^5.3.6",
@@ -66,7 +63,9 @@
         "start": "HOST=0.0.0.0 PORT=5000 DANGEROUSLY_DISABLE_HOST_CHECK=true react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "postinstall": "patch-package",
+        "build": "react-scripts build"
     },
     "eslintConfig": {
         "extends": [
@@ -121,9 +120,12 @@
         "babel-plugin-module-resolver": "^4.1.0",
         "eslint-config-prettier": "^8.5.0",
         "material-ui-popup-state": "^4.1.0",
-        "patch-package": "^6.5.0",
+        "patch-package": "^6.5.1",
         "postinstall-postinstall": "^2.1.0",
         "ts-node": "^10.9.1",
         "tsconfig-paths": "^4.1.0"
+    },
+    "overrides": {
+        "ansi-regex": "5.0.1"
     }
 }
