@@ -1,0 +1,2 @@
+- [Toast UI React Editor + React 18](toast-ui-react18.md) — editor works despite "Invalid hook call" warning; no functional impact.
+- [CRA CVE package overrides](cra-cve-overrides.md) — several packages blocked by Replit security policy; overrides added in package.json.
