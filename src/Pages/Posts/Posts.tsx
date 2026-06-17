@@ -1,9 +1,9 @@
-import { useState, useMemo, useEffect } from "react";
-import styled from "styled-components";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { RootState } from "../../Stores/store-config";
+import styled from "styled-components";
 import PostCard from "../../Components/Blog/PostCard";
+import { RootState } from "../../Stores/store-config";
 import { colors, media } from "../../Styles/theme.styles";
 
 type SortMode = "newest" | "oldest" | "views";
@@ -45,13 +45,16 @@ const Tab = styled.button<{ $active: boolean }>`
     font-weight: ${({ $active }) => ($active ? "600" : "400")};
     color: ${({ $active }) => ($active ? colors.accent : colors.textMuted)};
     border: none;
-    border-bottom: 2px solid ${({ $active }) => ($active ? colors.accent : "transparent")};
+    border-bottom: 2px solid
+        ${({ $active }) => ($active ? colors.accent : "transparent")};
     background: transparent;
     cursor: pointer;
     transition: all 0.15s;
     margin-bottom: -1px;
 
-    &:hover { color: ${colors.text}; }
+    &:hover {
+        color: ${colors.text};
+    }
 `;
 
 const Controls = styled.div`
@@ -74,8 +77,12 @@ const SearchInput = styled.input`
     outline: none;
     transition: border-color 0.15s;
 
-    &::placeholder { color: ${colors.textLight}; }
-    &:focus { border-color: ${colors.accent}; }
+    &::placeholder {
+        color: ${colors.textLight};
+    }
+    &:focus {
+        border-color: ${colors.accent};
+    }
 `;
 
 const SortBtn = styled.button<{ $active: boolean }>`
@@ -83,9 +90,11 @@ const SortBtn = styled.button<{ $active: boolean }>`
     border-radius: 6px;
     font-size: 0.78rem;
     font-weight: 500;
-    border: 1px solid ${({ $active }) => ($active ? colors.accent : colors.border)};
+    border: 1px solid
+        ${({ $active }) => ($active ? colors.accent : colors.border)};
     color: ${({ $active }) => ($active ? colors.accent : colors.textMuted)};
-    background: ${({ $active }) => ($active ? colors.accentLight : "transparent")};
+    background: ${({ $active }) =>
+        $active ? colors.accentLight : "transparent"};
     cursor: pointer;
     transition: all 0.15s;
     white-space: nowrap;
@@ -109,9 +118,11 @@ const TagFilter = styled.button<{ $active: boolean }>`
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 500;
-    border: 1px solid ${({ $active }) => ($active ? colors.accent : colors.border)};
+    border: 1px solid
+        ${({ $active }) => ($active ? colors.accent : colors.border)};
     color: ${({ $active }) => ($active ? colors.accent : colors.textMuted)};
-    background: ${({ $active }) => ($active ? colors.accentLight : "transparent")};
+    background: ${({ $active }) =>
+        $active ? colors.accentLight : "transparent"};
     cursor: pointer;
     transition: all 0.15s;
 
@@ -124,7 +135,8 @@ const TagFilter = styled.button<{ $active: boolean }>`
 
 const PostList = styled.div<{ $view: "grid" | "list" }>`
     display: grid;
-    grid-template-columns: ${({ $view }) => ($view === "list" ? "1fr" : "1fr 1fr")};
+    grid-template-columns: ${({ $view }) =>
+        $view === "list" ? "1fr" : "1fr 1fr"};
     gap: 1rem;
 
     ${media.tablet} {
@@ -166,7 +178,9 @@ const ClearBtn = styled.button`
     padding: 0;
     text-decoration: underline dotted;
 
-    &:hover { color: ${colors.accentHover}; }
+    &:hover {
+        color: ${colors.accentHover};
+    }
 `;
 
 const PAGE_SIZE = 12;
@@ -178,15 +192,25 @@ const Posts = () => {
     const [query, setQuery] = useState("");
     const [sortBy, setSortBy] = useState<SortMode>("newest");
     const viewCounts = useSelector((s: RootState) => s.views.counts);
-    const [activeTag, setActiveTag] = useState<string | null>(() => searchParams.get("tag"));
+    const [activeTag, setActiveTag] = useState<string | null>(() =>
+        searchParams.get("tag"),
+    );
     const [tab, setTab] = useState<"all" | "bookmarks">(() =>
-        searchParams.get("bookmarks") === "1" ? "bookmarks" : "all"
+        searchParams.get("bookmarks") === "1" ? "bookmarks" : "all",
     );
     const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
     const [view, setView] = useState<"grid" | "list">("grid");
-    const [readFilter, setReadFilter] = useState<"all" | "read" | "unread">("all");
+    const [readFilter, setReadFilter] = useState<"all" | "read" | "unread">(
+        "all",
+    );
     const readIds = useMemo(() => {
-        try { return JSON.parse(localStorage.getItem("cs_blog_read_posts") || "[]") as string[]; } catch { return [] as string[]; }
+        try {
+            return JSON.parse(
+                localStorage.getItem("cs_blog_read_posts") || "[]",
+            ) as string[];
+        } catch {
+            return [] as string[];
+        }
     }, []);
 
     useEffect(() => {
@@ -196,12 +220,15 @@ const Posts = () => {
     }, [searchParams]);
 
     const allTags = useMemo(() => {
-        const source = tab === "bookmarks" ? posts.filter((p) => bookmarkIds.includes(p.id)) : posts;
+        const source =
+            tab === "bookmarks"
+                ? posts.filter((p) => bookmarkIds.includes(p.id))
+                : posts;
         const counts: Record<string, number> = {};
         source.forEach((p) =>
             p.tags.forEach((t) => {
                 counts[t] = (counts[t] || 0) + 1;
-            })
+            }),
         );
         return Object.entries(counts)
             .sort((a, b) => b[1] - a[1])
@@ -210,7 +237,10 @@ const Posts = () => {
     }, [posts, bookmarkIds, tab]);
 
     const filtered = useMemo(() => {
-        let source = tab === "bookmarks" ? posts.filter((p) => bookmarkIds.includes(p.id)) : posts;
+        const source =
+            tab === "bookmarks"
+                ? posts.filter((p) => bookmarkIds.includes(p.id))
+                : posts;
         let result = source.filter((p) => {
             const q = query.toLowerCase();
             const matchSearch =
@@ -220,18 +250,38 @@ const Posts = () => {
                 p.tags.some((t) => t.toLowerCase().includes(q)) ||
                 p.content.toLowerCase().includes(q);
             const matchTag =
-                !activeTag || p.tags.map((t) => t.toLowerCase()).includes(activeTag.toLowerCase());
+                !activeTag ||
+                p.tags
+                    .map((t) => t.toLowerCase())
+                    .includes(activeTag.toLowerCase());
             return matchSearch && matchTag;
         });
 
-        if (readFilter === "read") result = result.filter((p) => readIds.includes(p.id));
-        else if (readFilter === "unread") result = result.filter((p) => !readIds.includes(p.id));
+        if (readFilter === "read")
+            result = result.filter((p) => readIds.includes(p.id));
+        else if (readFilter === "unread")
+            result = result.filter((p) => !readIds.includes(p.id));
 
         if (sortBy === "oldest") result = [...result].reverse();
-        else if (sortBy === "views") result = [...result].sort((a, b) => (viewCounts[b.id] || 0) - (viewCounts[a.id] || 0));
-        else result = [...result].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || 0);
+        else if (sortBy === "views")
+            result = [...result].sort(
+                (a, b) => (viewCounts[b.id] || 0) - (viewCounts[a.id] || 0),
+            );
+        else
+            result = [...result].sort(
+                (a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || 0,
+            );
         return result;
-    }, [posts, bookmarkIds, query, activeTag, sortBy, tab, readFilter, readIds]);
+    }, [
+        posts,
+        bookmarkIds,
+        query,
+        activeTag,
+        sortBy,
+        tab,
+        readFilter,
+        readIds,
+    ]);
 
     const handleTagClick = (tag: string) => {
         const next = tag === activeTag ? null : tag;
@@ -262,18 +312,27 @@ const Posts = () => {
     return (
         <Page>
             <PageHeader>
-                <PageTitle>{tab === "bookmarks" ? "즐겨찾기" : "전체 글"}</PageTitle>
+                <PageTitle>
+                    {tab === "bookmarks" ? "즐겨찾기" : "전체 글"}
+                </PageTitle>
                 <PageDesc>
-                    {totalCount}개의 {tab === "bookmarks" ? "저장된 글" : "학습 기록"}
+                    {totalCount}개의{" "}
+                    {tab === "bookmarks" ? "저장된 글" : "학습 기록"}
                     {activeTag ? ` · #${activeTag} 필터 중` : ""}
                 </PageDesc>
             </PageHeader>
 
             <TabRow>
-                <Tab $active={tab === "all"} onClick={() => handleTabChange("all")}>
+                <Tab
+                    $active={tab === "all"}
+                    onClick={() => handleTabChange("all")}
+                >
                     전체 글 ({posts.length})
                 </Tab>
-                <Tab $active={tab === "bookmarks"} onClick={() => handleTabChange("bookmarks")}>
+                <Tab
+                    $active={tab === "bookmarks"}
+                    onClick={() => handleTabChange("bookmarks")}
+                >
                     ★ 즐겨찾기 ({bookmarkIds.length})
                 </Tab>
             </TabRow>
@@ -285,38 +344,72 @@ const Posts = () => {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                 />
-                <SortBtn $active={sortBy === "newest"} onClick={() => setSortBy("newest")}>
+                <SortBtn
+                    $active={sortBy === "newest"}
+                    onClick={() => setSortBy("newest")}
+                >
                     최신순
                 </SortBtn>
-                <SortBtn $active={sortBy === "oldest"} onClick={() => setSortBy("oldest")}>
+                <SortBtn
+                    $active={sortBy === "oldest"}
+                    onClick={() => setSortBy("oldest")}
+                >
                     오래된순
                 </SortBtn>
-                <SortBtn $active={sortBy === "views"} onClick={() => setSortBy("views")}>
+                <SortBtn
+                    $active={sortBy === "views"}
+                    onClick={() => setSortBy("views")}
+                >
                     👀 조회수
                 </SortBtn>
-                <SortBtn $active={readFilter === "unread"} onClick={() => setReadFilter(readFilter === "unread" ? "all" : "unread")}>
+                <SortBtn
+                    $active={readFilter === "unread"}
+                    onClick={() =>
+                        setReadFilter(
+                            readFilter === "unread" ? "all" : "unread",
+                        )
+                    }
+                >
                     미완독
                 </SortBtn>
-                <SortBtn $active={readFilter === "read"} onClick={() => setReadFilter(readFilter === "read" ? "all" : "read")}>
+                <SortBtn
+                    $active={readFilter === "read"}
+                    onClick={() =>
+                        setReadFilter(readFilter === "read" ? "all" : "read")
+                    }
+                >
                     ✓ 완독
                 </SortBtn>
-                <SortBtn $active={view === "grid"} onClick={() => setView("grid")} title="그리드 보기">
+                <SortBtn
+                    $active={view === "grid"}
+                    onClick={() => setView("grid")}
+                    title="그리드 보기"
+                >
                     ⊞
                 </SortBtn>
-                <SortBtn $active={view === "list"} onClick={() => setView("list")} title="목록 보기">
+                <SortBtn
+                    $active={view === "list"}
+                    onClick={() => setView("list")}
+                    title="목록 보기"
+                >
                     ≡
                 </SortBtn>
             </Controls>
 
             {allTags.length > 0 && (
                 <TagRow>
-                    <TagFilter $active={!activeTag} onClick={() => handleTagClick("")}>
+                    <TagFilter
+                        $active={!activeTag}
+                        onClick={() => handleTagClick("")}
+                    >
                         전체
                     </TagFilter>
                     {allTags.map((t) => (
                         <TagFilter
                             key={t}
-                            $active={activeTag?.toLowerCase() === t.toLowerCase()}
+                            $active={
+                                activeTag?.toLowerCase() === t.toLowerCase()
+                            }
                             onClick={() => handleTagClick(t)}
                         >
                             #{t}
@@ -331,7 +424,9 @@ const Posts = () => {
                         ? `${filtered.length}개 결과${activeTag ? ` — #${activeTag}` : ""}${query ? ` "${query}"` : ""}`
                         : `총 ${totalCount}개`}
                 </ResultCount>
-                {hasFilter && <ClearBtn onClick={clearFilters}>필터 초기화</ClearBtn>}
+                {hasFilter && (
+                    <ClearBtn onClick={clearFilters}>필터 초기화</ClearBtn>
+                )}
             </ResultBar>
 
             <PostList $view={view}>
@@ -340,11 +435,13 @@ const Posts = () => {
                         {tab === "bookmarks" && totalCount === 0
                             ? "⭐ 즐겨찾기한 글이 없어요.\n글 카드에 마우스를 올리면 ☆ 버튼으로 저장할 수 있어요."
                             : posts.length === 0
-                            ? "아직 작성된 글이 없어요. 첫 글을 작성해보세요!"
-                            : "검색 결과가 없어요."}
+                              ? "아직 작성된 글이 없어요. 첫 글을 작성해보세요!"
+                              : "검색 결과가 없어요."}
                     </EmptyState>
                 ) : (
-                    filtered.slice(0, visibleCount).map((p) => <PostCard key={p.id} post={p} />)
+                    filtered
+                        .slice(0, visibleCount)
+                        .map((p) => <PostCard key={p.id} post={p} />)
                 )}
             </PostList>
 
