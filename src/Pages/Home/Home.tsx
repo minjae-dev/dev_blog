@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Stores/store-config";
 import ContributionHeatmap from "../../Components/Blog/ContributionHeatmap";
+import StudyGoal from "../../Components/Blog/StudyGoal";
 import PostCard from "../../Components/Blog/PostCard";
 import { colors, media } from "../../Styles/theme.styles";
 
@@ -110,31 +111,39 @@ const StartBtn = styled(Link)`
 
 const Home = () => {
     const posts = useSelector((s: RootState) => s.posts.posts);
+    const username = useSelector((s: RootState) => s.auth.username);
+    const isAuthenticated = useSelector((s: RootState) => s.auth.isAuthenticated);
     const recent = posts.slice(0, 6);
 
     return (
         <Page>
             <Greeting>
-                <GreetingTitle>CS Study Log 📚</GreetingTitle>
+                <GreetingTitle>
+                    {isAuthenticated && username ? `안녕하세요, ${username}님 👋` : "CS Study Log 📚"}
+                </GreetingTitle>
                 <GreetingDesc>
-                    A personal journal for tracking computer science concepts, algorithms, system design, and anything else worth remembering.
+                    CS 개념, 알고리즘, 시스템 설계 등 공부한 내용을 기록하는 개인 학습 일지입니다.
                 </GreetingDesc>
             </Greeting>
+
+            <StudyGoal posts={posts} />
 
             <ContributionHeatmap posts={posts} />
 
             <section>
                 <SectionHeader>
-                    <SectionTitle>Recent Posts</SectionTitle>
-                    {posts.length > 6 && <SeeAll to="/posts">See all →</SeeAll>}
+                    <SectionTitle>최근 글</SectionTitle>
+                    {posts.length > 6 && <SeeAll to="/posts">전체 보기 →</SeeAll>}
                 </SectionHeader>
 
                 {posts.length === 0 ? (
                     <EmptyState>
                         <EmptyIcon>✍️</EmptyIcon>
-                        <EmptyTitle>No posts yet</EmptyTitle>
-                        <EmptyDesc>Start logging your CS studies to track your progress.</EmptyDesc>
-                        <StartBtn to="/write">Write your first post</StartBtn>
+                        <EmptyTitle>아직 작성된 글이 없어요</EmptyTitle>
+                        <EmptyDesc>CS 공부 내용을 기록하며 학습 흐름을 추적해보세요.</EmptyDesc>
+                        <StartBtn to={isAuthenticated ? "/write" : "/login"}>
+                            {isAuthenticated ? "첫 글 작성하기" : "로그인하고 시작하기"}
+                        </StartBtn>
                     </EmptyState>
                 ) : (
                     <PostGrid>
