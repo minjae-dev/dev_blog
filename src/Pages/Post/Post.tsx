@@ -256,7 +256,7 @@ const Post = () => {
                     <ConfirmBox onClick={(e) => e.stopPropagation()}>
                         <ConfirmTitle>Delete this post?</ConfirmTitle>
                         <ConfirmDesc>
-                            "{post.title}" will be permanently deleted. This cannot be undone.
+                            &ldquo;{post.title}&rdquo; will be permanently deleted. This cannot be undone.
                         </ConfirmDesc>
                         <ConfirmBtns>
                             <ActionBtn onClick={() => setConfirmDelete(false)}>Cancel</ActionBtn>
