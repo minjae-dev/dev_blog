@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, current } from "@reduxjs/toolkit";
 
 export interface Post {
     id: string;
@@ -44,7 +44,7 @@ const postsSlice = createSlice({
                 updatedAt: now,
             };
             state.posts.unshift(post);
-            saveToStorage(state.posts);
+            saveToStorage(current(state).posts);
         },
         updatePost: (state, action: PayloadAction<Partial<Post> & { id: string }>) => {
             const idx = state.posts.findIndex((p) => p.id === action.payload.id);
@@ -54,12 +54,12 @@ const postsSlice = createSlice({
                     ...action.payload,
                     updatedAt: new Date().toISOString(),
                 };
-                saveToStorage(state.posts);
+                saveToStorage(current(state).posts);
             }
         },
         deletePost: (state, action: PayloadAction<string>) => {
             state.posts = state.posts.filter((p) => p.id !== action.payload);
-            saveToStorage(state.posts);
+            saveToStorage(current(state).posts);
         },
     },
 });

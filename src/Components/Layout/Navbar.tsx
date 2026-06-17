@@ -1,16 +1,21 @@
 import styled from "styled-components";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { colors, media, shadows } from "../../Styles/theme.styles";
+import { RootState } from "../../Stores/store-config";
+import { logout } from "../../Stores/authSlice";
+import { useTheme } from "../../Context/ThemeContext";
 
 const Nav = styled.nav`
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(255, 255, 255, 0.92);
+    background: var(--c-nav-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid ${colors.border};
     box-shadow: ${shadows.nav};
+    transition: background 0.2s ease;
 `;
 
 const Inner = styled.div`
@@ -21,7 +26,7 @@ const Inner = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.5rem;
+    gap: 1rem;
 `;
 
 const Logo = styled(Link)`
@@ -69,6 +74,32 @@ const NavLink = styled(Link)<{ $active?: boolean }>`
     }
 `;
 
+const RightGroup = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+`;
+
+const IconBtn = styled.button`
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: ${colors.textMuted};
+    background: transparent;
+    border: 1px solid ${colors.border};
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: ${colors.bgAlt};
+        color: ${colors.text};
+    }
+`;
+
 const WriteBtn = styled(Link)`
     padding: 0.45rem 1rem;
     border-radius: 6px;
@@ -77,7 +108,6 @@ const WriteBtn = styled(Link)`
     color: #fff;
     background: ${colors.accent};
     transition: background 0.15s ease;
-    flex-shrink: 0;
 
     &:hover {
         background: ${colors.accentHover};
@@ -89,8 +119,50 @@ const WriteBtn = styled(Link)`
     }
 `;
 
+const LogoutBtn = styled.button`
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: ${colors.textMuted};
+    background: transparent;
+    border: 1px solid ${colors.border};
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: ${colors.bgAlt};
+        color: ${colors.danger};
+        border-color: ${colors.danger};
+    }
+`;
+
+const LoginBtn = styled(Link)`
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: ${colors.textMuted};
+    background: transparent;
+    border: 1px solid ${colors.border};
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: ${colors.bgAlt};
+        color: ${colors.text};
+    }
+`;
+
 const Navbar = () => {
     const { pathname } = useLocation();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { isDark, toggleTheme } = useTheme();
+    const { isAuthenticated, username } = useSelector((s: RootState) => s.auth);
+
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate("/");
+    };
 
     return (
         <Nav>
@@ -106,7 +178,21 @@ const Navbar = () => {
                         Posts
                     </NavLink>
                 </NavLinks>
-                <WriteBtn to="/write">+ New Post</WriteBtn>
+                <RightGroup>
+                    <IconBtn onClick={toggleTheme} title={isDark ? "라이트 모드" : "다크 모드"}>
+                        {isDark ? "☀️" : "🌙"}
+                    </IconBtn>
+                    {isAuthenticated ? (
+                        <>
+                            <WriteBtn to="/write">+ New Post</WriteBtn>
+                            <LogoutBtn onClick={handleLogout} title={`${username} 로그아웃`}>
+                                로그아웃
+                            </LogoutBtn>
+                        </>
+                    ) : (
+                        <LoginBtn to="/login">로그인</LoginBtn>
+                    )}
+                </RightGroup>
             </Inner>
         </Nav>
     );
