@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../Stores/store-config";
 import ContributionHeatmap from "../../Components/Blog/ContributionHeatmap";
 import StudyGoal from "../../Components/Blog/StudyGoal";
+import TagStats from "../../Components/Blog/TagStats";
+import WeekdayStats from "../../Components/Blog/WeekdayStats";
 import PostCard from "../../Components/Blog/PostCard";
 import { colors, media } from "../../Styles/theme.styles";
 
@@ -34,6 +36,17 @@ const GreetingDesc = styled.p`
     color: ${colors.textMuted};
     line-height: 1.6;
     max-width: 520px;
+`;
+
+const StatsGrid = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+
+    ${media.tablet} {
+        grid-template-columns: 1fr;
+    }
 `;
 
 const SectionHeader = styled.div`
@@ -119,7 +132,9 @@ const Home = () => {
         <Page>
             <Greeting>
                 <GreetingTitle>
-                    {isAuthenticated && username ? `안녕하세요, ${username}님 👋` : "CS Study Log 📚"}
+                    {isAuthenticated && username
+                        ? `안녕하세요, ${username}님 👋`
+                        : "CS Study Log 📚"}
                 </GreetingTitle>
                 <GreetingDesc>
                     CS 개념, 알고리즘, 시스템 설계 등 공부한 내용을 기록하는 개인 학습 일지입니다.
@@ -127,8 +142,12 @@ const Home = () => {
             </Greeting>
 
             <StudyGoal posts={posts} />
-
             <ContributionHeatmap posts={posts} />
+
+            <StatsGrid>
+                <TagStats posts={posts} />
+                <WeekdayStats posts={posts} />
+            </StatsGrid>
 
             <section>
                 <SectionHeader>
@@ -140,7 +159,9 @@ const Home = () => {
                     <EmptyState>
                         <EmptyIcon>✍️</EmptyIcon>
                         <EmptyTitle>아직 작성된 글이 없어요</EmptyTitle>
-                        <EmptyDesc>CS 공부 내용을 기록하며 학습 흐름을 추적해보세요.</EmptyDesc>
+                        <EmptyDesc>
+                            CS 공부 내용을 기록하며 학습 흐름을 추적해보세요.
+                        </EmptyDesc>
                         <StartBtn to={isAuthenticated ? "/write" : "/login"}>
                             {isAuthenticated ? "첫 글 작성하기" : "로그인하고 시작하기"}
                         </StartBtn>
