@@ -8,39 +8,62 @@ import Posts from "./Pages/Posts/Posts";
 import Post from "./Pages/Post/Post";
 import Write from "./Pages/Write/Write";
 import Login from "./Pages/Login/Login";
+import Settings from "./Pages/Settings/Settings";
+import NotFound from "./Pages/NotFound/NotFound";
+import BackToTop from "./Components/Blog/BackToTop";
 import GlobalStyle from "./Styles/global.styles";
 import { ThemeProvider } from "./Context/ThemeContext";
 import { RootState } from "./Stores/store-config";
+import useKeyboardShortcuts from "./hooks/useKeyboardShortcuts";
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
     const isAuthenticated = useSelector((s: RootState) => s.auth.isAuthenticated);
     return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
+const AppInner = () => {
+    const isAuthenticated = useSelector((s: RootState) => s.auth.isAuthenticated);
+    useKeyboardShortcuts(isAuthenticated);
+
+    return (
+        <div className="App">
+            <Navbar />
+            <main>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/posts" element={<Posts />} />
+                    <Route path="/post/:id" element={<Post />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route
+                        path="/write"
+                        element={
+                            <PrivateRoute>
+                                <Write />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/settings"
+                        element={
+                            <PrivateRoute>
+                                <Settings />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+            </main>
+            <Footer />
+            <BackToTop />
+        </div>
+    );
+};
+
 function App() {
     return (
         <ThemeProvider>
             <GlobalStyle />
-            <div className="App">
-                <Navbar />
-                <main>
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/posts" element={<Posts />} />
-                        <Route path="/post/:id" element={<Post />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route
-                            path="/write"
-                            element={
-                                <PrivateRoute>
-                                    <Write />
-                                </PrivateRoute>
-                            }
-                        />
-                    </Routes>
-                </main>
-                <Footer />
-            </div>
+            <AppInner />
         </ThemeProvider>
     );
 }

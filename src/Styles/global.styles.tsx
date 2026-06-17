@@ -203,6 +203,19 @@ export const GlobalStyle = createGlobalStyle`
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--c-text-light); }
+
+  /* ── Print styles ── */
+  @media print {
+    .toastui-editor-contents { font-size: 12pt !important; }
+    nav, footer, aside, .copy-btn { display: none !important; }
+    a { text-decoration: none !important; color: inherit !important; }
+    pre { page-break-inside: avoid; }
+    h2, h3 { page-break-after: avoid; }
+    body { background: white !important; color: black !important; }
+  }
+
+  /* ── Selection ── */
+  ::selection { background: var(--c-accent); color: white; }
 `;
 
 export default GlobalStyle;

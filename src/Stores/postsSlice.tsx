@@ -8,6 +8,7 @@ export interface Post {
     tags: string[];
     createdAt: string;
     updatedAt: string;
+    pinned?: boolean;
 }
 
 const STORAGE_KEY = "cs_blog_posts";
@@ -61,8 +62,33 @@ const postsSlice = createSlice({
             state.posts = state.posts.filter((p) => p.id !== action.payload);
             saveToStorage(current(state).posts);
         },
+        duplicatePost: (state, action: PayloadAction<string>) => {
+            const src = state.posts.find((p) => p.id === action.payload);
+            if (!src) return;
+            const now = new Date().toISOString();
+            const copy: Post = {
+                ...current(src),
+                id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                title: `${src.title} (복사본)`,
+                createdAt: now,
+                updatedAt: now,
+                pinned: false,
+            };
+            state.posts.unshift(copy);
+            saveToStorage(current(state).posts);
+        },
+        togglePin: (state, action: PayloadAction<string>) => {
+            const idx = state.posts.findIndex((p) => p.id === action.payload);
+            if (idx !== -1) {
+                state.posts[idx] = {
+                    ...state.posts[idx],
+                    pinned: !state.posts[idx].pinned,
+                };
+                saveToStorage(current(state).posts);
+            }
+        },
     },
 });
 
-export const { addPost, updatePost, deletePost } = postsSlice.actions;
+export const { addPost, updatePost, deletePost, duplicatePost, togglePin } = postsSlice.actions;
 export default postsSlice;
